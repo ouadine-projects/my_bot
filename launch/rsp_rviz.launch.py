@@ -20,6 +20,9 @@ def generate_launch_description():
     xacro_file = os.path.join(pkg_path, 'description', 'robot.urdf.xacro')
     robot_description_config = xacro.process_file(xacro_file)
     
+    # Path to the RViz2 configuration file
+    rviz_config_file = os.path.join(pkg_path, 'config', 'my_robot.config.rviz')
+
     # Create a robot_state_publisher node
     params = {'robot_description': robot_description_config.toxml(), 'use_sim_time': use_sim_time}
     node_robot_state_publisher = Node(
@@ -27,6 +30,15 @@ def generate_launch_description():
         executable='robot_state_publisher',
         output='screen',
         parameters=[params]
+    )
+
+    # Create an RViz2 node
+    node_rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        arguments=['-d', rviz_config_file],  # Specify the RViz2 config file
+        output='screen'
     )
 
     # Launch!
@@ -37,5 +49,5 @@ def generate_launch_description():
             description='Use sim time if true'),
 
         node_robot_state_publisher,
-        
+        node_rviz
     ])
